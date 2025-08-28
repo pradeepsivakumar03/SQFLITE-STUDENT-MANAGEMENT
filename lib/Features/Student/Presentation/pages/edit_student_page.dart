@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stu_management_sqllite/Features/Student/Presentation/bloc/student_bloc.dart';
-import 'package:stu_management_sqllite/core/widgets/custom_textform_field.dart';
 import 'package:stu_management_sqllite/Features/Student/data/models/student_model.dart';
+import 'package:stu_management_sqllite/core/widgets/custom_textform_field.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_drop_down_field.dart';
 
-class AddStudentPage extends StatefulWidget {
-  const AddStudentPage({super.key});
+class EditStudentPage extends StatefulWidget {
+  final StudentModel studentModel;
+  const EditStudentPage({
+    super.key,
+    required this.studentModel,
+  });
 
   @override
-  State<AddStudentPage> createState() => _AddStudentPageState();
+  State<EditStudentPage> createState() => _EditStudentPageState();
 }
 
-class _AddStudentPageState extends State<AddStudentPage> {
+class _EditStudentPageState extends State<EditStudentPage> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
 
@@ -57,6 +61,18 @@ class _AddStudentPageState extends State<AddStudentPage> {
   ];
 
   @override
+  void initState() {
+    nameController.text = widget.studentModel.name;
+    rollnoController.text = widget.studentModel.rollno;
+    selectedClass = widget.studentModel.curClass;
+    selectedSection = widget.studentModel.section;
+    selectedBloodGroup = widget.studentModel.bloodGroup;
+    addressController.text = widget.studentModel.address;
+    parentPhnoController.text = widget.studentModel.parentPhno;
+    super.initState();
+  }
+
+  @override
   void dispose() {
     nameController.dispose();
     rollnoController.dispose();
@@ -65,9 +81,10 @@ class _AddStudentPageState extends State<AddStudentPage> {
     super.dispose();
   }
 
-  Future<void> _saveStudent() async {
+  Future<void> _editStudent() async {
     if (_formKey.currentState!.validate()) {
       final student = StudentModel(
+        id: widget.studentModel.id,
         name: nameController.text.trim(),
         rollno: rollnoController.text.trim(),
         curClass: selectedClass ?? '',
@@ -76,7 +93,9 @@ class _AddStudentPageState extends State<AddStudentPage> {
         address: addressController.text.trim(),
         parentPhno: parentPhnoController.text.trim(),
       );
-      context.read<StudentBloc>().add(AddStudentEvent(studentModel: student));
+      context
+          .read<StudentBloc>()
+          .add(UpdateStudentEvent(studentModel: student));
     }
   }
 
@@ -97,7 +116,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Student")),
+      appBar: AppBar(title: const Text("Edit Student")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocListener<StudentBloc, StudentState>(
@@ -119,7 +138,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
               selectedSection = null;
               selectedBloodGroup = null;
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Student added successfully!')),
+                const SnackBar(content: Text('Student updated successfully!')),
               );
             }
           },
@@ -179,7 +198,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                   customTextField("Parent Phone No", parentPhnoController,
                       _validateNotEmpty, context, TextInputType.phone),
                   const SizedBox(height: 20),
-                  customButton("Save", _saveStudent, context,
+                  customButton("Update", _editStudent, context,
                       isLoading: isLoading),
                 ],
               ),

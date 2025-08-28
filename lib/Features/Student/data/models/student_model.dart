@@ -2,6 +2,7 @@ import 'package:stu_management_sqllite/Features/Student/domain/entity/student.da
 
 class StudentModel extends Student {
   const StudentModel({
+    super.id,
     required super.name,
     required super.rollno,
     required super.curClass,
@@ -13,6 +14,7 @@ class StudentModel extends Student {
 
   factory StudentModel.fromJson(Map<String, dynamic> map) {
     return StudentModel(
+      id: map['id'] as int,
       name: map['name'] as String,
       rollno: map['rollno'] as String,
       curClass: map['curClass'] as String,
@@ -36,6 +38,7 @@ class StudentModel extends Student {
   }
 
   Student copyWith({
+    int? id,
     String? name,
     String? rollno,
     String? curClass,
@@ -45,6 +48,7 @@ class StudentModel extends Student {
     String? parentPhno,
   }) {
     return Student(
+      id: id ?? this.id,
       name: name ?? this.name,
       rollno: rollno ?? this.rollno,
       curClass: curClass ?? this.curClass,
